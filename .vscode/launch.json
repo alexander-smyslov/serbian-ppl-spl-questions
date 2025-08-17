@@ -38,6 +38,18 @@
             },
             "console": "integratedTerminal"
         },
+                {
+            "name": "PPLH_en",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "PPLH_en.py",
+            "cwd": "${workspaceFolder}/PPLH_en/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
+        
         
     ]
 }
