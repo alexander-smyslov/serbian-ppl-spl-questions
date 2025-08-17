@@ -54,6 +54,7 @@ class QParser():
         self.in_str = ""
         self.lines=[]
         self.slike={}
+        self.question_to_images={}
         self.fieldnames = ['number','question', 'a','b','c','d','right_answer','category','img']
 
        
@@ -305,6 +306,7 @@ class QParser():
                 if match > 0 and len_len  < current_len:
                     img = image_path
                     len_len = current_len
+                    self.question_to_images[image_path]=img
 
             if len(self.answer)>0:
                 answer = self.answer[n]
@@ -373,5 +375,7 @@ class QParser():
         self.writerow(writer)
         if self.num_question != self.q_number - 1:
             self.error('num qestion not equal')
+        if len(self.question_to_images)!= len(self.slike):
+            self.error('img not equal')
 
           
