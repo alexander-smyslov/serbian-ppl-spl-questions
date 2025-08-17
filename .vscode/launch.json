@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "SPL_srb",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "1.py",
+            "cwd": "${workspaceFolder}/SPL_srb/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "PPLH_srb",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "1.py",
+            "cwd": "${workspaceFolder}/PPLH_srb/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "PPL",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "1.py",
+            "cwd": "${workspaceFolder}/PPL/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
+        
+    ]
+}
