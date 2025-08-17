@@ -54,6 +54,7 @@ class QParser():
         self.in_str = ""
         self.lines=[]
         self.slike={}
+        self.slike_idx=[]
         self.question_to_images={}
         self.fieldnames = ['number','question', 'a','b','c','d','right_answer','category','img']
 
@@ -88,8 +89,11 @@ class QParser():
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         imgDir = "_imgs"
         os.makedirs(imgDir, exist_ok=True)
-        strpage=0
+        strpage=-1
         for page in doc:
+            strpage=strpage+1
+            if strpage == 0:
+                continue
             # Extract words with coordinates
             words = page.get_text("words", sort=True)
             # Extract images with bounding boxes
@@ -130,29 +134,33 @@ class QParser():
                 data = doc.extract_image(xref)
                 with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
                     image.save(f'{imgDir}/{self.category}-{caption_text}.png', mode='wb')
-            strpage=strpage+1
+
         doc.close()
          
 
     def parse_images_just(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
-        strpage=0
+        strpage=-1
         imgDir = "_idx_imgs"
         os.makedirs(imgDir, exist_ok=True)
         for page in doc: # iterate the document pages
+            strpage=strpage+1
+            if strpage == 0:
+                continue
             imageList = doc.get_page_images(strpage, full=False)
 
             idx = 0
             if imageList:
-                
                 for img in reversed(imageList):
+                    bbox = page.get_image_bbox(img[7])
                     data = doc.extract_image(img[0])
                     with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
                         name = f'{imgDir}/{self.category}-{strpage}-{idx}.png'
                         #print (name)
                         image.save(name, mode='wb')
+                        self.slike_idx.append(name)
                     idx = idx + 1
-            strpage=strpage+1
+
         doc.close()
 
 
@@ -160,7 +168,11 @@ class QParser():
         lines = {}
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         block_size = 0
+        strpage = -1
         for page in doc: # iterate the document pages
+            strpage=strpage+1
+            if strpage == 0:
+                continue
             words = (page.get_text("words", sort=False))
             for t in words:          
                 l = t[4].rstrip()
@@ -179,6 +191,7 @@ class QParser():
                         else:
                             lines[s]=l
             block_size = block_size + 10000000
+
         sorted_lines = dict(sorted(lines.items()))
         for k ,v in sorted_lines.items():
             self.lines.append(v)
@@ -188,7 +201,11 @@ class QParser():
         lines = {}
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         block_size = 0
+        strpage = -1
         for page in doc: # iterate the document pages
+            strpage=strpage+1
+            if strpage == 0:
+                continue
             text = (page.get_text("blocks", sort=False))
             for t in text:          
                 l = t[4].rstrip()
@@ -219,7 +236,11 @@ class QParser():
                                             
     def parse_dict(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
+        strpage = -1
         for page in doc: # iterate the document pages
+            strpage=strpage+1
+            if strpage == 0:
+                continue
             text = (page.get_text("dict", sort=False))
             for block in text['blocks']:
                 if block['type'] == 0:
@@ -377,7 +398,9 @@ class QParser():
             self.error('num qestion not equal')
         lenq = len(self.question_to_images)
         lens = len(self.slike)
+        leni = len(self.slike_idx)
         if lenq!= lens:
             self.error(f'img not equal {lenq} {lens} - ')
-
+        if lenq!= leni:
+            self.error(f'img not equal {lenq} {leni} - ')
           
