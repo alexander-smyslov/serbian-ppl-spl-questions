@@ -2,8 +2,9 @@
 import sys
 import os
 import csv
+import shutil
 
-from parser.parser import QParser
+from parser.parser import QParser, clean_dir
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -11,6 +12,8 @@ if __name__ == '__main__':
     ff = '1.csv'
     if os.path.exists(ff):
         os.remove(ff)
+
+    clean_dir(['_idx_imgs','_img'])
 
     parser = []
     parser.append(QParser('S1.Vazduhoplovni propisi-.pdf', 'Vazduhoplovni propisi', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))

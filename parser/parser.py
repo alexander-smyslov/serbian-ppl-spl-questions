@@ -6,9 +6,16 @@ import csv
 import pymupdf
 import PIL.Image
 import io   
-
+import shutil
     
 sys.stdout.reconfigure(encoding='utf-8')
+
+def clean_dir(dir_to_clean):
+    for a in dir_to_clean:
+        if os.path.isdir(a):
+            shutil.rmtree(a)
+        os.makedirs(a, exist_ok=True)
+
 
 class QPdfLine():
     def __init__(self, text, font):
@@ -88,6 +95,8 @@ class QParser():
             for idx, (xref, bbox) in enumerate(img_info_list):
                 img_x0, img_y0, img_x1, img_y1 = bbox
 
+                if img_y0 < 10:
+                    continue
                 # Collect words *under the image*
                 caption_words = []
                 for w in words:
@@ -126,7 +135,7 @@ class QParser():
 
             idx = 0
             if imageList:
-                os.makedirs(imgDir, exist_ok=True)
+                
                 for img in reversed(imageList):
                     data = doc.extract_image(img[0])
                     with PIL.Image.open(io.BytesIO(data.get('image'))) as image:

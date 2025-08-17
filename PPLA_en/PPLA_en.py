@@ -3,7 +3,7 @@ import sys
 import os
 import csv
 
-from parser.parser import QParser
+from parser.parser import QParser, clean_dir
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -12,6 +12,8 @@ if __name__ == '__main__':
     if os.path.exists(ff):
         os.remove(ff)
 
+    clean_dir(['_idx_imgs','_img'])
+    
     parser = []
     parser.append(QParser('Air law.pdf', 'Air law', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 79))
     parser.append(QParser('Aircraft  General Knowledge.pdf', 'Aircraft General Knowledge', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
@@ -28,6 +30,6 @@ if __name__ == '__main__':
         fieldnames = ['number','question', 'a','b','c','d','right_answer','category']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
         for p in parser:
-            p.parse_lines(5, False, True)
+            p.parse_lines(5)
             p.parse(writer)
 

@@ -3,7 +3,7 @@ import sys
 import os
 import csv
 
-from parser.parser import QParser
+from parser.parser import QParser, clean_dir
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -12,6 +12,8 @@ if __name__ == '__main__':
     if os.path.exists(ff):
         os.remove(ff)
 
+    clean_dir(['_idx_imgs','_img'])
+    
     parser = []
     parser.append(QParser('H1.Vazduhoplovni propisi.pdf', 'Vazduhoplovni propisi', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
     parser.append(QParser('H2.Poznavanje vazduhoplova.pdf', 'Poznavanje vazduhoplova', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 136))
