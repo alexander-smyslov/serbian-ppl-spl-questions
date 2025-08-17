@@ -153,6 +153,8 @@ class QParser():
             if imageList:
                 for img in reversed(imageList):
                     bbox = page.get_image_bbox(img[7])
+                    if bbox.y0<10:
+                        continue
                     data = doc.extract_image(img[0])
                     with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
                         name = f'{imgDir}/{self.category}-{strpage}-{idx}.png'
@@ -400,7 +402,7 @@ class QParser():
         lens = len(self.slike)
         leni = len(self.slike_idx)
         if lenq!= lens:
-            self.error(f'img not equal {lenq} {lens} - ')
+            self.error(f'1 img not equal {lenq} {lens} - ')
         if lenq!= leni:
-            self.error(f'img not equal {lenq} {leni} - ')
+            self.error(f'2 img not equal {lenq} {leni} - ')
           
