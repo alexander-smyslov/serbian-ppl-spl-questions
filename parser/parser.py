@@ -21,11 +21,12 @@ class QPdfSlikeName():
         self.line = line
         
 class QParser():
-    def __init__(self, filename_, category, pattern_q_, pattern_a_, pattern_b_, pattern_c_, pattern_d_, num_question):
+    def __init__(self, filename_, category, pattern_q_, pattern_a_, pattern_b_, pattern_c_, pattern_d_, num_question  ):
         self.category = category
         self.num_question = num_question
         self.filename = filename_
         self.q_number = 1
+        self._round = 10
         self.pattern_tab = r"\t"
         self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br']
         self.pattern_answer = 'Pregled tačnih odgovora'
@@ -46,9 +47,13 @@ class QParser():
         self.lines=[]
 
        
+    def parse_lines(self, round = 10, parse_slike = True, images_idx = True):
+        self._round = int(round)
         self.parse_words()
-        self.parse_slike()
-        self.parse_images_just()
+        if parse_slike:
+            self.parse_slike()
+        if images_idx:
+            self.parse_images_just()
         #self.parse_block()
         #self.parse_dict()
                        
@@ -114,10 +119,11 @@ class QParser():
     def parse_images_just(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         strpage=0
-
+        imgDir = "_idx_imgs"
+        os.makedirs(imgDir, exist_ok=True)
         for page in doc: # iterate the document pages
             imageList = doc.get_page_images(strpage, full=False)
-            imgDir = "_idx_imgs"
+
             idx = 0
             if imageList:
                 os.makedirs(imgDir, exist_ok=True)
@@ -125,7 +131,7 @@ class QParser():
                     data = doc.extract_image(img[0])
                     with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
                         name = f'{imgDir}/{self.category}-{strpage}-{idx}.png'
-                        print (name)
+                        #print (name)
                         image.save(name, mode='wb')
                     idx = idx + 1
             strpage=strpage+1
@@ -140,7 +146,7 @@ class QParser():
             words = (page.get_text("words", sort=False))
             for t in words:          
                 l = t[4].rstrip()
-                s = block_size + 10000 * int(t[1]/10)
+                s = block_size + 10000 * int(t[1]/self._round)*self._round
                 if len(l) > 0:
                     d = l.split('\n')
                     if len(d) > 1:
@@ -298,7 +304,7 @@ class QParser():
                 self.str_c = ""
                 self.str_d = ""
                 self.in_str  = "q"
-                
+
             match_a = re.match(self.pattern_a, l)
             if match_a:
                 self.in_str  = "a"
