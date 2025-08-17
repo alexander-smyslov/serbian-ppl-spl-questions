@@ -47,6 +47,7 @@ class QParser():
 
        
         self.parse_words()
+        self.parse_slike()
         self.parse_images_just()
         #self.parse_block()
         #self.parse_dict()
@@ -67,55 +68,48 @@ class QParser():
                 if len(e) == 2:
                     self.answer[int(e[0])]=self.format_answer(int(e[1])) 
 
-    def parse_images(self):
+    def parse_slike(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
+        imgDir = "_imgs"
+        os.makedirs(imgDir, exist_ok=True)
         strpage=0
+        for page in doc:
+            # Extract words with coordinates
+            words = page.get_text("words", sort=True)
+            # Extract images with bounding boxes
+            images = page.get_images(full=True)
+            img_info_list = [(img[0], page.get_image_bbox(img)) for img in images]
 
-        for page in doc: # iterate the document pages
-            imageList = doc.get_page_images(strpage, full=False)
-           
-            imgDir = "_imgs"
-            idx = 0
-            if imageList:
-                text = (page.get_text("blocks", sort=True))
-                os.makedirs(imgDir, exist_ok=True)
-                for img in imageList:
-                    xref = img[0]
-                    bbox = page.get_image_rects(xref)
-                    #print(f"Image XREF: {xref}, Bounding Box: {bbox}")
-                    #continue
-                    #imrect = page.get_image_bbox(img)
-                    slika_name = ''
-                    #if strpage == 7:
-                    #    print(f"Image XREF: {xref}, Bounding Box: {bbox}")
-                    ll=''
-                    for t in reversed( text):
-                                  
-                        ll = t[4].replace('\n', '').rstrip()             
-                        match_obj = re.findall(r'Slika ', ll)
-                        if not match_obj:
-                            continue
-                                            
-                        a4 =  int(bbox[0][3]/10)*10
-                        a4a = a4+40
+            for idx, (xref, bbox) in enumerate(img_info_list):
+                img_x0, img_y0, img_x1, img_y1 = bbox
 
-                        b4 = int(t[3]/10)*10
-                        b1 = (a4 <  b4)
-                        b2 = (b4 < a4a)
-    
-                        if (a4 <  b4) and  (b4 < a4a) :
-                            #print (f"found {ll}")
-                            break
+                # Collect words *under the image*
+                caption_words = []
+                for w in words:
+                    #print (w)
+                    x0 = w[0]
+                    x1 = w[2]
+                    y0 = w[1]
+                    y1 = w[3]
+                    t = w[4]
+                    #if t == 'Slika':
+                        #print (f"{img_x0} {x0} {x1} {img_x1} {t} ")
+                        #print (f" {y0} > {img_y1}  {t} ")
+                    if img_x0  <= x0 and x0 <= img_x1 and y0 > img_y1 and y1 < img_y1+50  :
+                        #print ('appned')
+                        caption_words.append(w[4])
+              
+                if caption_words:
+                    caption_text = " ".join(caption_words).strip()
+                else:
+                    caption_text = f"page{strpage}_img{idx}"
 
-                    data = doc.extract_image(img[0])
-                    if ll != '':
-                        ll = ll.strip()
-                        with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
-                            print (f'{imgDir}/{self.category}-{ll}.png')
-                            image.save(f'{imgDir}/{self.category}-{ll}.png', mode='wb')
-                    idx = idx + 1
+                data = doc.extract_image(xref)
+                with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
+                    image.save(f'{imgDir}/{self.category}-{caption_text}.png', mode='wb')
             strpage=strpage+1
         doc.close()
+         
 
     def parse_images_just(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
