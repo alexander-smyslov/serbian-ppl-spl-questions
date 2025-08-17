@@ -15,6 +15,10 @@ class QPdfLine():
         self.text = text
         self.font = font
 
+class QPdfSlikeName():
+    def __init__(self, text, line):
+        self.text = text
+        self.line = line
         
 class QParser():
     def __init__(self, filename_, category, pattern_q_, pattern_a_, pattern_b_, pattern_c_, pattern_d_, num_question):
@@ -41,12 +45,12 @@ class QParser():
         self.in_str = ""
         self.lines=[]
 
+       
         self.parse_words()
         self.parse_images()
         #self.parse_block()
         #self.parse_dict()
-
-                        
+                       
         i = 0
         self.l_line = len(self.lines) - 1                    
         while i < self.l_line:        
@@ -66,15 +70,50 @@ class QParser():
     def parse_images(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         strpage=0
+
         for page in doc: # iterate the document pages
-            imageList = (page.get_images())
+            imageList = doc.get_page_images(strpage, full=False)
+           
             imgDir = "_imgs"
+            idx = 0
             if imageList:
+                text = (page.get_text("blocks", sort=True))
                 os.makedirs(imgDir, exist_ok=True)
-                for idx, img in enumerate(imageList, start=1):
+                for img in imageList:
+                    xref = img[0]
+                    bbox = page.get_image_rects(xref)
+                    #print(f"Image XREF: {xref}, Bounding Box: {bbox}")
+                    #continue
+                    #imrect = page.get_image_bbox(img)
+                    slika_name = ''
+                    #if strpage == 7:
+                    #    print(f"Image XREF: {xref}, Bounding Box: {bbox}")
+                    ll=''
+                    for t in reversed( text):
+                                  
+                        ll = t[4].replace('\n', '').rstrip()             
+                        match_obj = re.findall(r'Slika ', ll)
+                        if not match_obj:
+                            continue
+                                            
+                        a4 =  int(bbox[0][3]/10)*10
+                        a4a = a4+40
+
+                        b4 = int(t[3]/10)*10
+                        b1 = (a4 <  b4)
+                        b2 = (b4 < a4a)
+    
+                        if (a4 <  b4) and  (b4 < a4a) :
+                            #print (f"found {ll}")
+                            break
+
                     data = doc.extract_image(img[0])
-                    with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
-                        image.save(f'{imgDir}/{self.category}-{strpage}-{idx}.png', mode='wb')
+                    if ll != '':
+                        ll = ll.strip()
+                        with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
+                            print (f'{imgDir}/{self.category}-{ll}.png')
+                            image.save(f'{imgDir}/{self.category}-{ll}.png', mode='wb')
+                    idx = idx + 1
             strpage=strpage+1
         doc.close()
 
