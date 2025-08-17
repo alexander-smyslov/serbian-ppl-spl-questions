@@ -375,7 +375,9 @@ class QParser():
         self.writerow(writer)
         if self.num_question != self.q_number - 1:
             self.error('num qestion not equal')
-        if len(self.question_to_images)!= len(self.slike):
-            self.error('img not equal')
+        lenq = len(self.question_to_images)
+        lens = len(self.slike)
+        if lenq!= lens:
+            self.error(f'img not equal {lenq} {lens} - ')
 
           
