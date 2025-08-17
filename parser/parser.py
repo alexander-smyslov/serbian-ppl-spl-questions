@@ -35,6 +35,7 @@ class QParser():
         self.q_number = 1
         self._round = 10
         self.pattern_tab = r"\t"
+        self.pattern_slike = r"Slike"
         self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br']
         self.pattern_answer = 'Pregled tačnih odgovora'
         self.answer = {}
@@ -52,6 +53,8 @@ class QParser():
         self.str_d = ""
         self.in_str = ""
         self.lines=[]
+        self.slike=[]
+        self.fieldnames = ['number','question', 'a','b','c','d','right_answer','category','img']
 
        
     def parse_lines(self, round = 10, parse_slike = True, images_idx = True):
@@ -274,16 +277,18 @@ class QParser():
             str_cc = self.format_remove(self.str_c, ['c.','3.','3)'])
             str_dd = self.format_remove(self.str_d, ['d.','4.','4)'])
             answer = 'a'
+            img = None
 
             if len(self.answer)>0:
                 answer = self.answer[n]
                  
-            writer.writerow({'number': n,'question': str_qq, 'a': str_aa ,'b': str_bb ,'c': str_cc ,'d': str_dd ,'right_answer': answer , 'category': self.category});
+            writer.writerow({'number': n,'question': str_qq, 'a': str_aa ,'b': str_bb ,'c': str_cc ,'d': str_dd ,'right_answer': answer , 'category': self.category, 'img': img})
     
     def error(self, msg):
         print(f"! {msg} {self.filename}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")   
             
-    def parse(self, writer):
+    def parse(self, csvfile):
+        writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
         i = 0
         while i < self.l_line:      
             i = i + 1

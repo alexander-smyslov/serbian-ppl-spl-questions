@@ -26,9 +26,7 @@ if __name__ == '__main__':
     parser.append(QParser('H9.Komunikacije.pdf', 'Komunikacije', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
 
     with open(ff, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['number','question', 'a','b','c','d','right_answer','category']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
         for p in parser:
             p.parse_lines()
-            p.parse(writer)
+            p.parse(csvfile)
 
