@@ -120,7 +120,8 @@ class QParser():
                     caption_text = " ".join(caption_words).strip()
                     match_obj = re.match(self.pattern_slike, caption_text)
                     if match_obj:
-                        self.slike[caption_text]=f'{imgDir}/{self.category}-{caption_text}.png' 
+                        t = self.make_image_hash(caption_text)
+                        self.slike[t]=f'{imgDir}/{self.category}-{caption_text}.png' 
                 else:
                     caption_text = f"page{strpage}_img{idx}"
                     
@@ -265,6 +266,19 @@ class QParser():
                 continue
         return text_in.strip()       
 
+    def make_image_hash(self, text):
+        mapping = {'slici ':'slika ',
+                   'sliku ':'slika ', 
+                    ' ':'', 
+                    '.':'',
+                    '-':'',
+                    '(':'', 
+                    ')':''}
+        text = text.lower()
+        for k, v in mapping.items():
+            text = text.replace(k, v)
+        return text
+
     def writerow(self, writer):
 
         if len(self.str_q) == 0 and len(self.str_a) == 0 and len(self.str_b) == 0:
@@ -283,8 +297,10 @@ class QParser():
             answer = 'a'
             img = None
             len_len = 0
+
+            t = self.make_image_hash(str_qq)
             for image_name, image_path in self.slike.items():
-                match = str_qq.find(image_name)
+                match = t.find(image_name)
                 current_len = len(image_name)
                 if match > 0 and len_len  < current_len:
                     img = image_path
