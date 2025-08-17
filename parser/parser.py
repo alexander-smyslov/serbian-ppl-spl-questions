@@ -47,7 +47,7 @@ class QParser():
 
        
         self.parse_words()
-        self.parse_images()
+        self.parse_images_just()
         #self.parse_block()
         #self.parse_dict()
                        
@@ -116,6 +116,27 @@ class QParser():
                     idx = idx + 1
             strpage=strpage+1
         doc.close()
+
+    def parse_images_just(self):
+        doc = pymupdf.open(f"pdf/{self.filename}") # open a document
+        strpage=0
+
+        for page in doc: # iterate the document pages
+            imageList = doc.get_page_images(strpage, full=False)
+            imgDir = "_idx_imgs"
+            idx = 0
+            if imageList:
+                os.makedirs(imgDir, exist_ok=True)
+                for img in reversed(imageList):
+                    data = doc.extract_image(img[0])
+                    with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
+                        name = f'{imgDir}/{self.category}-{strpage}-{idx}.png'
+                        print (name)
+                        image.save(name, mode='wb')
+                    idx = idx + 1
+            strpage=strpage+1
+        doc.close()
+
 
     def parse_words(self):
         lines = {}
