@@ -9,7 +9,7 @@
             "name": "SPL_srb",
             "type": "debugpy",
             "request": "launch",
-            "program": "1.py",
+            "program": "SPL_srb.py",
             "cwd": "${workspaceFolder}/SPL_srb/",
             "env": {
                     "PYTHONPATH": "${cwd}"
@@ -20,7 +20,7 @@
             "name": "PPLH_srb",
             "type": "debugpy",
             "request": "launch",
-            "program": "1.py",
+            "program": "PPLH_srb.py",
             "cwd": "${workspaceFolder}/PPLH_srb/",
             "env": {
                     "PYTHONPATH": "${cwd}"
@@ -31,7 +31,7 @@
             "name": "PPL",
             "type": "debugpy",
             "request": "launch",
-            "program": "1.py",
+            "program": "PPL.py",
             "cwd": "${workspaceFolder}/PPL/",
             "env": {
                     "PYTHONPATH": "${cwd}"

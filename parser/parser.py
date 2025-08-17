@@ -4,6 +4,8 @@ import re
 import os
 import csv
 import pymupdf
+import PIL.Image
+import io   
 
     
 sys.stdout.reconfigure(encoding='utf-8')
@@ -40,6 +42,7 @@ class QParser():
         self.lines=[]
 
         self.parse_words()
+        self.parse_images()
         #self.parse_block()
         #self.parse_dict()
 
@@ -59,7 +62,22 @@ class QParser():
             for e in match:
                 if len(e) == 2:
                     self.answer[int(e[0])]=self.format_answer(int(e[1])) 
-    
+
+    def parse_images(self):
+        doc = pymupdf.open(f"pdf/{self.filename}") # open a document
+        strpage=0
+        for page in doc: # iterate the document pages
+            imageList = (page.get_images())
+            imgDir = "_imgs"
+            if imageList:
+                os.makedirs(imgDir, exist_ok=True)
+                for idx, img in enumerate(imageList, start=1):
+                    data = doc.extract_image(img[0])
+                    with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
+                        image.save(f'{imgDir}/{self.category}-{strpage}-{idx}.png', mode='wb')
+            strpage=strpage+1
+        doc.close()
+
     def parse_words(self):
         lines = {}
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
@@ -86,6 +104,7 @@ class QParser():
         sorted_lines = dict(sorted(lines.items()))
         for k ,v in sorted_lines.items():
             self.lines.append(v)
+        doc.close()
                   
     def parse_block(self):
         lines = {}
@@ -117,6 +136,7 @@ class QParser():
         sorted_lines = dict(sorted(lines.items()))
         for k ,v in sorted_lines.items():
             self.lines.append(v)
+        doc.close()
 
                                             
     def parse_dict(self):
@@ -138,7 +158,8 @@ class QParser():
                             if skip_step:
                                 continue
                             if len(l) > 0:
-                                self.lines.append(l) 
+                                self.lines.append(l)
+        doc.close() 
                                         
     def format_answer(self, num):
         if num == 1:
@@ -252,28 +273,4 @@ class QParser():
         if self.num_question != self.q_number - 1:
             self.error('num qestion not equal')
 
-if __name__ == '__main__':
-    ff = '1.csv'
-    if os.path.exists(ff):
-        os.remove(ff)
-
-    parser = []
-    parser.append(QParser('H1.Vazduhoplovni propisi.pdf', 'Vazduhoplovni propisi', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H2.Poznavanje vazduhoplova.pdf', 'Poznavanje vazduhoplova', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 136))
-    parser.append(QParser('H3.Performanse leta.pdf', 'Performanse leta i planiranje', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 158))
-    parser.append(QParser('H4.Ljudske mogucnosti.pdf', 'Ljudske mogucnosti', '^{number}\\.', '^1\\) ', '^2\\) ', '^3\\) ', '^4\\) ', 150))
-    parser.append(QParser('H5.Meteorologija.pdf','Meteorologija', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H6.Navigacija.pdf', 'Navigacija', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H7.Operativne procedure.pdf', 'Operativne Procedure', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.',110))
-    parser.append(QParser('H8.Teorija letenja.pdf', 'Teorija letenja', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',151))
-    parser.append(QParser('H9.Komunikacije.pdf', 'Komunikacije', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
-
-    with open(ff, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['number','question', 'a','b','c','d','right_answer','category']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
-        for p in parser:
-            p.parse(writer)
-
-
- 
           
