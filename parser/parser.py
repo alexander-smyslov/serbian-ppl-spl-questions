@@ -35,7 +35,7 @@ class QParser():
         self.q_number = 1
         self._round = 10
         self.pattern_tab = r"\t"
-        self.pattern_slike = r"Slike"
+        self.pattern_slike = r"Slika"
         self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br']
         self.pattern_answer = 'Pregled tačnih odgovora'
         self.answer = {}
@@ -53,7 +53,7 @@ class QParser():
         self.str_d = ""
         self.in_str = ""
         self.lines=[]
-        self.slike=[]
+        self.slike={}
         self.fieldnames = ['number','question', 'a','b','c','d','right_answer','category','img']
 
        
@@ -118,8 +118,12 @@ class QParser():
               
                 if caption_words:
                     caption_text = " ".join(caption_words).strip()
+                    match_obj = re.match(self.pattern_slike, caption_text)
+                    if match_obj:
+                        self.slike[caption_text]=f'{imgDir}/{self.category}-{caption_text}.png' 
                 else:
                     caption_text = f"page{strpage}_img{idx}"
+                    
 
                 data = doc.extract_image(xref)
                 with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
@@ -278,6 +282,13 @@ class QParser():
             str_dd = self.format_remove(self.str_d, ['d.','4.','4)'])
             answer = 'a'
             img = None
+            len_len = 0
+            for image_name, image_path in self.slike.items():
+                match = str_qq.find(image_name)
+                current_len = len(image_name)
+                if match > 0 and len_len  < current_len:
+                    img = image_path
+                    len_len = current_len
 
             if len(self.answer)>0:
                 answer = self.answer[n]
