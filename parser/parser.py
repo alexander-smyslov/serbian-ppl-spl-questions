@@ -10,8 +10,8 @@ import shutil
     
 sys.stdout.reconfigure(encoding='utf-8')
 
-def clean_dir(dir_to_clean):
-    for a in dir_to_clean:
+def clean_dir():
+    for a in ['_idx_imgs','_imgs']:
         if os.path.isdir(a):
             shutil.rmtree(a)
         os.makedirs(a, exist_ok=True)

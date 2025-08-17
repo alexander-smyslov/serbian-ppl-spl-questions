@@ -12,8 +12,8 @@ if __name__ == '__main__':
     if os.path.exists(ff):
         os.remove(ff)
 
-    clean_dir(['_idx_imgs','_img'])
-    
+    clean_dir()
+
     parser = []
     parser.append(QParser('Air law.pdf', 'Air law', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 79))
     parser.append(QParser('Aircraft  General Knowledge.pdf', 'Aircraft General Knowledge', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
