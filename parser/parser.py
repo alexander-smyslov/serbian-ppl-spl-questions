@@ -36,7 +36,7 @@ class QParser():
         self._round = 10
         self.pattern_tab = r"\t"
         self.pattern_slike = r"Slika"
-        self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br']
+        self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br', r'Najnovije']
         self.pattern_answer = 'Pregled tačnih odgovora'
         self.answer = {}
 
