@@ -1,8 +1,6 @@
 
 import sys
 import os
-import csv
-import shutil
 
 from parser.parser import QParser, clean_dir
 

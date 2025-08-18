@@ -21,7 +21,7 @@ if __name__ == '__main__':
     #parser.append(QParser('FPL-PERF SPL.pdf', 'Flight Planing and Performance', 'num_1234', 30))
     #parser.append(QParser('Human performance.pdf', 'Human performance and limitations', 'num_1234_bracert', 150))
     #+ parser.append(QParser('Metheorology.pdf','Metheorology', 'num_abcd', 150))
-    parser.append(QParser('NAV SPL.pdf', 'Navigation', 'num_1234', 41))
+    #parser.append(QParser('NAV SPL.pdf', 'Navigation', 'num_1234', 41))
     #parser.append(QParser('OPS SPL.pdf', 'Operational procedures', 'num_1234',102))
     #parser.append(QParser('POF SPL.pdf', 'Principles of Flight', 'num_1234',47))
     #parser.append(QParser('Comunication.pdf', 'Comunication', 'num_abcd',150))
