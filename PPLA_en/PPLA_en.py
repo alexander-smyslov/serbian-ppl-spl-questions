@@ -15,15 +15,15 @@ if __name__ == '__main__':
     clean_dir()
 
     parser = []
-    parser.append(QParser('Air law.pdf', 'Air law', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 79))
-    parser.append(QParser('Aircraft  General Knowledge.pdf', 'Aircraft General Knowledge', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('Flight performance and planning.pdf', 'Flight Performance', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 148))
-    parser.append(QParser('Human performance.pdf', 'Human performance and limitations', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('Metheorology.pdf','Meteorology', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('Navigation.pdf', 'Navigation', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 138))
-    parser.append(QParser('Operational procedures.pdf', 'Operational procedures', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
-    parser.append(QParser('Principles of Flight.pdf', 'Principles of Flight', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
-    parser.append(QParser('Comunication.pdf', 'Communication', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',137))
+    parser.append(QParser('Air law.pdf', 'Air law', 'num_abcd', 79))
+    parser.append(QParser('Aircraft  General Knowledge.pdf', 'Aircraft General Knowledge', 'num_abcd', 150))
+    parser.append(QParser('Flight performance and planning.pdf', 'Flight Performance', 'num_abcd', 148))
+    parser.append(QParser('Human performance.pdf', 'Human performance and limitations', 'num_abcd', 150))
+    parser.append(QParser('Metheorology.pdf','Meteorology', 'num_abcd', 150))
+    parser.append(QParser('Navigation.pdf', 'Navigation', 'num_abcd', 138))
+    parser.append(QParser('Operational procedures.pdf', 'Operational procedures', 'num_abcd',150))
+    parser.append(QParser('Principles of Flight.pdf', 'Principles of Flight', 'num_abcd',150))
+    parser.append(QParser('Comunication.pdf', 'Communication', 'num_abcd',137))
 
 
     with open(ff, 'w', newline='', encoding='utf-8') as csvfile:

@@ -15,15 +15,15 @@ if __name__ == '__main__':
     clean_dir()
 
     parser = []
-    parser.append(QParser('H1.Vazduhoplovni propisi.pdf', 'Vazduhoplovni propisi', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H2.Poznavanje vazduhoplova.pdf', 'Poznavanje vazduhoplova', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 136))
-    parser.append(QParser('H3.Performanse leta.pdf', 'Performanse leta i planiranje', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 158))
-    parser.append(QParser('H4.Ljudske mogucnosti.pdf', 'Ljudske mogucnosti', '^{number}\\.', '^1\\) ', '^2\\) ', '^3\\) ', '^4\\) ', 150))
-    parser.append(QParser('H5.Meteorologija.pdf','Meteorologija', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H6.Navigacija.pdf', 'Navigacija', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.', 150))
-    parser.append(QParser('H7.Operativne procedure.pdf', 'Operativne Procedure', '^{number}\\.', '^a\\.', '^b\\.', '^c\\.', '^d\\.',110))
-    parser.append(QParser('H8.Teorija letenja.pdf', 'Teorija letenja', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',151))
-    parser.append(QParser('H9.Komunikacije.pdf', 'Komunikacije', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
+    parser.append(QParser('H1.Vazduhoplovni propisi.pdf', 'Vazduhoplovni propisi', 'num_abcd', 150))
+    parser.append(QParser('H2.Poznavanje vazduhoplova.pdf', 'Poznavanje vazduhoplova', 'num_abcd', 136))
+    parser.append(QParser('H3.Performanse leta.pdf', 'Performanse leta i planiranje', 'num_abcd', 158))
+    parser.append(QParser('H4.Ljudske mogucnosti.pdf', 'Ljudske mogucnosti', 'num_1234_bracert', 150))
+    parser.append(QParser('H5.Meteorologija.pdf','Meteorologija', 'num_abcd', 150))
+    parser.append(QParser('H6.Navigacija.pdf', 'Navigacija', 'num_abcd', 150))
+    parser.append(QParser('H7.Operativne procedure.pdf', 'Operativne Procedure', 'num_wo_abcd',110))
+    parser.append(QParser('H8.Teorija letenja.pdf', 'Teorija letenja', 'num_abcd',151))
+    parser.append(QParser('H9.Komunikacije.pdf', 'Komunikacije', 'num_abcd',150))
 
     with open(ff, 'w', newline='', encoding='utf-8') as csvfile:
         for p in parser:

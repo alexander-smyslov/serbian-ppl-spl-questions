@@ -28,7 +28,7 @@ class QPdfSlikeName():
         self.line = line
         
 class QParser():
-    def __init__(self, filename_, category, pattern_q_, pattern_a_, pattern_b_, pattern_c_, pattern_d_, num_question  ):
+    def __init__(self, filename_, category, type_parser, num_question  ):
         self.category = category
         self.num_question = num_question
         self.filename = filename_
@@ -39,6 +39,49 @@ class QParser():
         self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br']
         self.pattern_answer = 'Pregled tačnih odgovora'
         self.answer = {}
+
+        self.page_text_min = 0
+        self.page_text_max = 1800
+
+        self.page_img_min = 20
+        #self.page_img_max = 20
+
+        self.type_parser = type_parser # 'num_abcd'
+        pattern_q_ = '^{number}\\. '
+        pattern_a_ = '^a\\.'
+        pattern_b_ = '^b\\.' 
+        pattern_c_ = '^c\\.'
+        pattern_d_ = '^d\\.'
+
+        if type_parser == 'num_wo_abcd':
+            pattern_q_ = '^{number}\\.'
+            pattern_a_ = '^a\\. '
+            pattern_b_ = '^b\\. '
+            pattern_c_ = '^c\\. '
+            pattern_d_ = '^d\\. '
+
+        if type_parser == 'num_abcd_space':
+            pattern_q_ = '^{number}\\. '
+            pattern_a_ = '^a\\. '
+            pattern_b_ = '^b\\. '
+            pattern_c_ = '^c\\. '
+            pattern_d_ = '^d\\. '
+
+        if type_parser == 'num_1234':
+            pattern_q_ = '^{number} - '
+            pattern_a_ = '^1\\. '
+            pattern_b_ = '^2\\. '
+            pattern_c_ = '^3\\. '
+            pattern_d_ = '^4\\. '
+
+        if type_parser == 'num_1234_bracert':
+            pattern_q_ = '^{number}\\.'
+            pattern_a_ = '^1\\) '
+            pattern_b_ = '^2\\) '
+            pattern_c_ = '^3\\) '
+            pattern_d_ = '^4\\) '
+
+
         self.pattern_q_ = pattern_q_
         self.pattern_q = pattern_q_.replace('{number}',str(self.q_number))
         self.pattern_a = pattern_a_
@@ -114,11 +157,7 @@ class QParser():
                     y0 = w[1]
                     y1 = w[3]
                     t = w[4]
-                    #if t == 'Slika':
-                        #print (f"{img_x0} {x0} {x1} {img_x1} {t} ")
-                        #print (f" {y0} > {img_y1}  {t} ")
                     if img_x0  <= x0 and x0 <= img_x1 and y0 > img_y1 and y1 < img_y1+50  :
-                        #print ('appned')
                         caption_words.append(w[4])
               
                 if caption_words:
@@ -153,7 +192,7 @@ class QParser():
             if imageList:
                 for img in reversed(imageList):
                     bbox = page.get_image_bbox(img[7])
-                    if bbox.y0<10:
+                    if bbox.y0<self.page_img_min:
                         continue
                     data = doc.extract_image(img[0])
                     with PIL.Image.open(io.BytesIO(data.get('image'))) as image:
@@ -178,6 +217,13 @@ class QParser():
             words = (page.get_text("words", sort=False))
             for t in words:          
                 l = t[4].rstrip()
+                y0 = t[1]
+                if y0 < self.page_text_min:
+                    continue
+                #if l == 'Najnovije':
+                #    print ('a')
+                if y0 > self.page_text_max:
+                    continue
                 s = block_size + 10000 * int(t[1]/self._round)*self._round
                 if len(l) > 0:
                     d = l.split('\n')
