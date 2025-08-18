@@ -28,7 +28,10 @@ class QPdfSlikeName():
         self.line = line
         
 class QParser():
-    def __init__(self, filename_, category, type_parser, num_question  ):
+    def __init__(self, filename_, category, type_parser, num_question, start_page,  end_page, question_page, page_text_min, page_text_max ):
+        self.start_page = start_page
+        self.end_page = end_page
+        self.question_page = question_page
         self.category = category
         self.num_question = num_question
         self.filename = filename_
@@ -36,12 +39,12 @@ class QParser():
         self._round = 10
         self.pattern_tab = r"\t"
         self.pattern_slike = r"Slika"
-        self.pattern_skip = [r'Period važenja', r'(\d+) \/ (\d+)', r'^Slika br', r'Najnovije informacije', 'PPL - Vazduhoplovni propisi']
+        self.pattern_skip = [ r'Period važenja', r'(\d+) \/ (\d+)', r'Najnovije informacije', 'PPL - Vazduhoplovni propisi']
         self.pattern_answer = 'Pregled tačnih odgovora'
         self.answer = {}
 
-        self.page_text_min = 0
-        self.page_text_max = 1800
+        self.page_text_min = page_text_min
+        self.page_text_max = page_text_max
 
         self.page_img_min = 20
         #self.page_img_max = 20
@@ -96,6 +99,7 @@ class QParser():
         self.str_d = ""
         self.in_str = ""
         self.lines=[]
+        self.lines_question=[]
         self.slike={}
         self.slike_idx=[]
         self.question_to_images={}
@@ -104,38 +108,41 @@ class QParser():
        
     def parse_lines(self, round = 10, parse_slike = True, images_idx = True):
         self._round = int(round)
-        self.parse_words()
+        self.lines = self.parse_words(self.start_page, self.end_page)
+        if self.question_page > 0:
+            self.lines_question = self.parse_words(self.question_page, self.question_page)
         if parse_slike:
             self.parse_slike()
         if images_idx:
             self.parse_images_just()
         #self.parse_block()
         #self.parse_dict()
-                       
-        i = 0
-        self.l_line = len(self.lines) - 1                    
-        while i < self.l_line:        
-            i = i + 1
-            l = self.lines[i]
-            match_obj = re.match(self.pattern_answer, l)
-            if match_obj:
-                break
-        while i < self.l_line:
-            i = i + 1
-            l = self.lines[i]
-            match = re.findall(r"(\d+)\. - (\d)", l)
-            for e in match:
-                if len(e) == 2:
-                    self.answer[int(e[0])]=self.format_answer(int(e[1])) 
+
+        if self.question_page > 0:               
+            i = -1
+            count_line = len(self.lines_question) - 1                    
+            while i < count_line:        
+                i = i + 1
+                l = self.lines_question[i]
+                match_obj = re.match(self.pattern_answer, l)
+                if match_obj:
+                    break
+            while i < count_line:
+                i = i + 1
+                l = self.lines_question[i]
+                match = re.findall(r"(\d+)\. - (\d)", l)
+                for e in match:
+                    if len(e) == 2:
+                        self.answer[int(e[0])]=self.format_answer(int(e[1])) 
 
     def parse_slike(self):
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         imgDir = "_imgs"
         os.makedirs(imgDir, exist_ok=True)
-        strpage=-1
+        strpage=0
         for page in doc:
             strpage=strpage+1
-            if strpage == 0:
+            if strpage == 1:
                 continue
             # Extract words with coordinates
             words = page.get_text("words", sort=True)
@@ -205,24 +212,25 @@ class QParser():
         doc.close()
 
 
-    def parse_words(self):
+    def parse_words(self, start_page, end_page):
         lines = {}
         doc = pymupdf.open(f"pdf/{self.filename}") # open a document
         block_size = 0
-        strpage = -1
+        strpage = 0
         for page in doc: # iterate the document pages
             strpage=strpage+1
-            if strpage == 0:
+            if not (start_page <= strpage and strpage <= end_page):
                 continue
             words = (page.get_text("words", sort=False))
             for t in words:          
                 l = t[4].rstrip()
                 y0 = t[1]
+                y1 = t[3]
                 if y0 < self.page_text_min:
+                    #print(f"skip {l} {y0} < {self.page_text_min}")
                     continue
-                #if l == 'Najnovije':
-                #    print ('a')
-                if y0 > self.page_text_max:
+                if y1 > self.page_text_max:
+                    #print(f"skip {l} {y1} > {self.page_text_max}")
                     continue
                 s = block_size + 10000 * int(t[1]/self._round)*self._round
                 if len(l) > 0:
@@ -241,9 +249,11 @@ class QParser():
             block_size = block_size + 10000000
 
         sorted_lines = dict(sorted(lines.items()))
+        lines=[]
         for k ,v in sorted_lines.items():
-            self.lines.append(v)
+            lines.append(v)
         doc.close()
+        return lines
                   
     def parse_block(self):
         lines = {}
@@ -388,12 +398,14 @@ class QParser():
     def parse(self, csvfile):
         writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
         i = 0
-        while i < self.l_line:      
+        count_line = len(self.lines)-1
+        while i < count_line:      
             i = i + 1
             l = self.lines[i]
             match_answere = re.match(self.pattern_answer, l)
             if match_answere:
                 break
+            
             skip_step = False
             for skip in self.pattern_skip:
                 match_skip = re.match(skip, l)

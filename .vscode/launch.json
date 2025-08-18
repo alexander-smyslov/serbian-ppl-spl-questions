@@ -17,6 +17,17 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "SPL_en",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "SPL_en.py",
+            "cwd": "${workspaceFolder}/SPL_en/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
+        {
             "name": "PPLH_srb",
             "type": "debugpy",
             "request": "launch",
