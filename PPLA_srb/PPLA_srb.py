@@ -23,8 +23,7 @@ if __name__ == '__main__':
     parser.append(QParser('Navigacija.pdf', 'Navigacija', 'num_abcd', 145,2, 50, -1, 30, 750))
     parser.append(QParser('Operativne_procedure.pdf', 'Operativne Procedure', 'num_abcd',146,2, 50, -1, 30, 750))
     parser.append(QParser('Teorija_letenja.pdf', 'Teorija letenja', 'num_abcd',149,2, 50, -1, 30, 750))
-    parser.append(QParser('Opšte_poznavanje_vazduhoplova.pdf', 'Opšte poznavanje vazduhoplova', 'num_abcd',136,2, 50, -1, 30, 750))
-    #parser.append(QParser('Komunikacije.pdf', 'Komunikacije', '^{number}\\. ', '^a\\.', '^b\\.', '^c\\.', '^d\\.',150))
+    parser.append(QParser('H9.Komunikacije.pdf', 'Komunikacije', 'num_abcd',150, 2, 22, -1, 30, 750))
 
 
     with open(ff, 'w', newline='', encoding='utf-8') as csvfile:
