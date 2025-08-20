@@ -91,6 +91,12 @@ class QParser():
             pattern_c_ = '^3\\) '
             pattern_d_ = '^4\\) '
 
+        if type_parser == 'num_abcd_bracert':
+            pattern_q_ = '^{number}'
+            pattern_a_ = '^a\\)'
+            pattern_b_ = '^b\\)'
+            pattern_c_ = '^c\\)'
+            pattern_d_ = '^d\\)'
 
         self.pattern_q_ = pattern_q_
         self.pattern_q = pattern_q_.replace('{number}',str(self.q_number))
@@ -368,19 +374,20 @@ class QParser():
 
     def writerow(self, writer):
 
+        n = (self.q_number - 1)
         if len(self.str_q) == 0 and len(self.str_a) == 0 and len(self.str_b) == 0:
             return
         if len(self.str_a) == 0:
-            self.error('answer a empty')
+            self.error(f'answer a empty {n}')
         if len(self.str_b) == 0:
-            self.error('answer b empty')
+            self.error(f'answer b empty {n}')
         if len(self.str_q) > 0: 
-            n = (self.q_number - 1)
+            
             str_qq = self.format_remove_num(self.str_q, n)
-            str_aa = self.format_remove(self.str_a, ['a.','1.','1)'])
-            str_bb = self.format_remove(self.str_b, ['b.','2.','2)'])
-            str_cc = self.format_remove(self.str_c, ['c.','3.','3)'])
-            str_dd = self.format_remove(self.str_d, ['d.','4.','4)'])
+            str_aa = self.format_remove(self.str_a, ['a.','1.','1)','a)'])
+            str_bb = self.format_remove(self.str_b, ['b.','2.','2)','b)'])
+            str_cc = self.format_remove(self.str_c, ['c.','3.','3)','c)'])
+            str_dd = self.format_remove(self.str_d, ['d.','4.','4)','d)'])
             answer = 'a'
             img = None
             len_len = 0
@@ -462,7 +469,7 @@ class QParser():
 
         self.writerow(writer)
         if self.num_question != self.q_number - 1:
-            self.error('num qestion not equal')
+            self.error(f'num qestion not equal {self.num_question} <> {self.q_number}')
         lenq = len(self.question_to_images)
         lens = len(self.slike)
         leni = len(self.slike_idx)
