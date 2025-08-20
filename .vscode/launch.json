@@ -82,7 +82,17 @@
             },
             "console": "integratedTerminal"
         },
-        
+        {
+            "name": "ULA_srb",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "ULA_srb.py",
+            "cwd": "${workspaceFolder}/ULA_srb/",
+            "env": {
+                    "PYTHONPATH": "${cwd}"
+            },
+            "console": "integratedTerminal"
+        },
         
     ]
 }
