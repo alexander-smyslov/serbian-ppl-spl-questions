@@ -76,6 +76,13 @@ class QParser():
             pattern_b_ = '^2\\. '
             pattern_c_ = '^3\\. '
             pattern_d_ = '^4\\. '
+            
+        if type_parser == 'num_wo_1234':
+            pattern_q_ = '^{number} -'
+            pattern_a_ = '^1\\. '
+            pattern_b_ = '^2\\. '
+            pattern_c_ = '^3\\. '
+            pattern_d_ = '^4\\. '
 
         if type_parser == 'num_1234_bracert':
             pattern_q_ = '^{number}\\.'
@@ -397,7 +404,7 @@ class QParser():
             
     def parse(self, csvfile):
         writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames, dialect='excel', delimiter = ';',  quotechar = '"', quoting=csv.QUOTE_ALL)
-        i = 0
+        i = -1
         count_line = len(self.lines)-1
         while i < count_line:      
             i = i + 1
